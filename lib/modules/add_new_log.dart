@@ -241,13 +241,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
           FAB(
             onPressed: () {
               // >>>>>>>>>>>>>>>>>>>>>>>>>>>> ADD BUTTON <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-              setState(() {
-                _count++;
-                increments++;
-                listSize++;
-                contentsCtrlr.insert(0, TextEditingController());
-                //nodes.insert(_count, FocusNode());
-              });
+              _incContentFields();
             },
             icon: const Icon(Icons.add),
             text: "Add",
@@ -267,6 +261,16 @@ class _CreateNewLogState extends State<CreateNewLog> {
         ],
       ),
     );
+  }
+
+  _incContentFields() {
+    setState(() {
+      _count++;
+      increments++;
+      listSize++;
+      contentsCtrlr.insert(0, TextEditingController());
+      //nodes.insert(_count, FocusNode());
+    });
   }
 
   _contentInput(int index, context) {
@@ -348,14 +352,15 @@ class _CreateNewLogState extends State<CreateNewLog> {
               inputType: TextInputType.multiline,
               maxLines: null,
               onSubmit: () => {
-                setState(() {
-                  _count++;
-                  increments++;
-                  listSize++;
-                  contentsCtrlr.insert(0, TextEditingController());
-                  //nodes.insert(_count, FocusNode());
-                  //FocusScope.of(context).autofocus(nodes[_count]);
-                }),
+                if (Platform.isWindows)
+                  {
+                    contentsCtrlr[index].text =
+                        backSpaceString(contentsCtrlr[index].text)
+                  },
+                if (index == 0)
+                  {
+                    _incContentFields(),
+                  }
               },
             ),
           ),

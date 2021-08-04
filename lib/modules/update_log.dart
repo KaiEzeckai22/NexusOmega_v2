@@ -331,12 +331,7 @@ class _UpdateLogState extends State<UpdateLog> {
               FAB(
                 onPressed: () {
                   // >>>>>>>>>>>>>>>>>>>>>>>>>>>> ADD BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                  setState(() {
-                    _count++;
-                    increments++;
-                    listSize++;
-                    contentsCtrlr.insert(0, TextEditingController());
-                  });
+                  _incContentFields();
                 },
                 icon: const Icon(Icons.add),
                 text: "Add",
@@ -356,6 +351,16 @@ class _UpdateLogState extends State<UpdateLog> {
           ),
           persistentFooterButtons: const <Widget>[]),
     );
+  }
+
+  _incContentFields() {
+    setState(() {
+      _count++;
+      increments++;
+      listSize++;
+      contentsCtrlr.insert(0, TextEditingController());
+      //nodes.insert(_count, FocusNode());
+    });
   }
 
   _contentInput(int index, context) {
@@ -435,14 +440,15 @@ class _UpdateLogState extends State<UpdateLog> {
               inputType: TextInputType.multiline,
               maxLines: null,
               onSubmit: () => {
-                setState(() {
-                  _count++;
-                  increments++;
-                  listSize++;
-                  contentsCtrlr.insert(0, TextEditingController());
-                  //nodes.insert(_count, FocusNode());
-                  //FocusScope.of(context).autofocus(nodes[_count]);
-                }),
+                if (Platform.isWindows)
+                  {
+                    contentsCtrlr[index].text =
+                        backSpaceString(contentsCtrlr[index].text)
+                  },
+                if (index == 0)
+                  {
+                    _incContentFields(),
+                  }
               },
             ),
           ),

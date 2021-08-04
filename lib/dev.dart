@@ -20,6 +20,15 @@ double contentSize = 20, titleSize = 37, authorIDSize = 13;
 doNoting() {}
 none() {}
 
+String backSpaceString(String str) {
+  String result = '';
+  if (str.isNotEmpty) {
+    result = str.substring(0, str.length - 1);
+  }
+
+  return result;
+}
+
 void share(BuildContext context, Object any) {
   //gkmnfinal RenderBox box = context.findRenderObject();
 
