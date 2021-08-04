@@ -6,6 +6,7 @@ import 'package:another_flushbar/flushbar.dart';
 
 import 'dev.dart';
 import 'modules/login.dart';
+import 'modules/logs.dart';
 // import 'login.dart';
 
 class MainMenu extends StatefulWidget {
@@ -183,9 +184,9 @@ class _MainMenuState extends State<MainMenu> {
         messageStyle: cxTextStyle());
     switch (index) {
       case 0:
-        // Navigator.push(
-        //     context, MaterialPageRoute(builder: (context) => new LogList()));
-        // //disguisedToast(context: context, message: mainOptions[index]);
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => new LogList()));
+        //disguisedToast(context: context, message: mainOptions[index]);
         break;
       case 1:
         // Navigator.push(context,
