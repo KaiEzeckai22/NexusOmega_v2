@@ -164,6 +164,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
       backgroundColor: colour('black'),
       appBar: AppBar(
         centerTitle: true,
+        flexibleSpace: cxMoveWindow(),
         title: cText(text: "New Log Entry", colour: colour('')),
         actions: [
           IconButton(

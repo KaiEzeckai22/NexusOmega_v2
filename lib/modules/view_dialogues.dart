@@ -2,29 +2,29 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:nexus_omega_app_v2/models/log.dart';
+import 'package:nexus_omega_app_v2/models/dialogue.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:another_flushbar/flushbar.dart';
 import '../dev.dart';
 import 'share_methods.dart';
-import 'update_log.dart';
+import 'update_dialogue.dart';
 
-class ViewLog extends StatefulWidget {
-  final String logTitle, logTags, logID, logAuthor;
-  final List<String> logContents;
-  const ViewLog(
+class ViewDialogue extends StatefulWidget {
+  final String dialogueTitle, dialogueTags, dialogueID, dialogueAuthor;
+  final List<dynamic> dialogueContents;
+  const ViewDialogue(
       {Key? key,
-      required this.logTitle,
-      required this.logTags,
-      required this.logContents,
-      required this.logID,
-      required this.logAuthor})
+      required this.dialogueTitle,
+      required this.dialogueTags,
+      required this.dialogueContents,
+      required this.dialogueID,
+      required this.dialogueAuthor})
       : super(key: key);
   @override
-  _ViewLogState createState() => _ViewLogState();
+  _ViewDialogueState createState() => _ViewDialogueState();
 }
 
-class _ViewLogState extends State<ViewLog> {
+class _ViewDialogueState extends State<ViewDialogue> {
   late SharedPreferences tokenStore;
   String debug = "";
   int numdeBug = 0,
@@ -37,15 +37,19 @@ class _ViewLogState extends State<ViewLog> {
   String titleFont = importedFonts[0];
   String authorFont = importedFonts[0];
   String contentFont = importedFonts[0];
+
   late String displayTitle, displayTag;
   late List<String> displayContent;
-  late Log logBuffer;
+  late Dialogue dialogueBuffer;
 
   @override
   void initState() {
     super.initState();
-    logBuffer = Log(
-        widget.logTitle, widget.logTags, widget.logContents, widget.logAuthor);
+    dialogueBuffer = Dialogue(widget.dialogueTitle, widget.dialogueTags,
+        widget.dialogueContents, widget.dialogueAuthor);
+    //displayTitle = widget.dialogueTitle;
+    //displayContent = widget.dialogueContents;
+    //delayeddialoguein();
   }
 
   List<PopupItem> menu = [
@@ -53,7 +57,7 @@ class _ViewLogState extends State<ViewLog> {
     PopupItem(2, 'Delete'),
     PopupItem(3, 'Modify Title Size'),
     PopupItem(4, 'Modify Content Size'),
-    PopupItem(4, 'Modify Author ID Size'),
+    PopupItem(5, 'Modify Author ID Size'),
     PopupItem(6, 'Font Style Toggle'),
     PopupItem(7, 'Share'),
     PopupItem(8, 'Export JSON'),
@@ -67,19 +71,18 @@ class _ViewLogState extends State<ViewLog> {
     });
     switch (_selectedChoices) {
       case 'Update':
-        //defocus();
+        defocus();
         await Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => UpdateLog(
-                      logTitle: logBuffer.title,
-                      logTags: logBuffer.tags,
-                      logContents:
-                          logBuffer.content.map((s) => s as String).toList(),
-                      logID: widget.logID.toString(),
-                      logAuthor: logBuffer.author,
+                builder: (context) => UpdateDialogue(
+                      dialogueTitle: dialogueBuffer.title,
+                      dialogueTags: dialogueBuffer.tags,
+                      dialogueContents: dialogueBuffer.content,
+                      dialogueID: widget.dialogueID.toString(),
+                      dialogueAuthor: dialogueBuffer.author,
                     )));
-        reExtract(widget.logID);
+        reExtract(widget.dialogueID);
         break;
       case 'Modify Title Size':
         disguisedPrompt(
@@ -151,7 +154,7 @@ class _ViewLogState extends State<ViewLog> {
                 }));
         break;
       case 'Delete':
-        deleteLogPrompt(widget.logID, widget.logTitle);
+        deleteDialoguePrompt(widget.dialogueID, widget.dialogueTitle);
         break;
       case 'Font Style Toggle':
         tripleDisguises(
@@ -175,7 +178,6 @@ class _ViewLogState extends State<ViewLog> {
                 titleFont = importedFonts[titleFontIndex];
               }
             });
-            //print(importedFonts[titleFontIndex]);
           },
           button2Name: 'Author',
           button2Colour: colour('dgreen'),
@@ -189,7 +191,6 @@ class _ViewLogState extends State<ViewLog> {
                 authorFont = importedFonts[authorFontIndex];
               }
             });
-            //print(importedFonts[authorFontIndex]);
           },
           button3Name: 'Content',
           button3Colour: colour('dred'),
@@ -203,18 +204,17 @@ class _ViewLogState extends State<ViewLog> {
                 contentFont = importedFonts[contentFontIndex];
               }
             });
-            //print(importedFonts[authorFontIndex]);
           },
         );
         break;
       case 'Share':
-        shareLog(context, logBuffer);
+        shareDialogue(context, dialogueBuffer);
         break;
       case 'Export JSON':
-        exportLogJSON(context, logBuffer);
+        exportDialogueJSON(context, dialogueBuffer);
         break;
       case 'nukeTest':
-        reExtract(widget.logID);
+        reExtract(widget.dialogueID);
         // NUKE AREA
 
         // disguisedPrompt(
@@ -227,29 +227,23 @@ class _ViewLogState extends State<ViewLog> {
         //     button1Colour: colour('dgreen'),
         //     button1Callback: () => setState(() {
         //           numdeBug++;
-        //           print(numdeBug);
         //         }),
         //     button2Name: 'No',
         //     button2Colour: colour('red'),
         //     button2Callback: () => setState(() {
         //           numdeBug--;
-        //           print(numdeBug);
         //         }));
         break;
       default:
-      // print(_selectedChoices);
-      // _selectedChoices = "none";
-      // print(_selectedChoices);
+        _selectedChoices = "none";
     }
   }
 
   Future<String?> prefSetup() async {
     tokenStore = await SharedPreferences.getInstance();
     if (tokenStore.getString('token') != null) {
-      // print(tokenStore.getString('token'));
       return tokenStore.getString('token');
     } else {
-      // print(tokenStore.getString('token'));
       tokenStore.setString('token', 'empty');
       return 'empty token';
     }
@@ -259,13 +253,13 @@ class _ViewLogState extends State<ViewLog> {
     disguisedToast(
         secDur: 2,
         context: context,
-        message: 'Updating Log',
+        message: 'Updating Dialogue',
         messageStyle: cxTextStyle(style: 'bold', colour: colour('blue')));
     await Future.delayed(const Duration(seconds: 2), () {});
     String retrievedToken = '';
     await prefSetup().then((value) => {retrievedToken = value!});
     final response = await http.get(
-      Uri.parse('https://nexus-omega.herokuapp.com/get/' + id),
+      Uri.parse('https://nexus-omega.herokuapp.com/dialogue/get/' + id),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: "Bearer " + retrievedToken
@@ -274,7 +268,7 @@ class _ViewLogState extends State<ViewLog> {
     if (mounted) {
       if (response.statusCode == 200) {
         setState(() {
-          logBuffer = Log.fromJson(json.decode(response.body));
+          dialogueBuffer = Dialogue.fromJson(json.decode(response.body));
         });
         disguisedToast(
             secDur: 2,
@@ -290,19 +284,20 @@ class _ViewLogState extends State<ViewLog> {
             messageStyle: cxTextStyle(style: 'bold', colour: colour('lred')));
       }
     }
+
     return (response.statusCode);
   }
 
-  Future<int> deleteLog(String id) async {
+  Future<int> deleteDialogue(String id) async {
     disguisedToast(
         context: context,
-        message: 'Deleting Log',
+        message: 'Deleting Dialogue',
         messageStyle: cxTextStyle(colour: colour('lred')));
     await Future.delayed(const Duration(seconds: 2), () {});
     String retrievedToken = '';
     await prefSetup().then((value) => {retrievedToken = value!});
     final response = await http.delete(
-      Uri.parse('https://nexus-omega.herokuapp.com/delete/' + id),
+      Uri.parse('https://nexus-omega.herokuapp.com/dialogue/delete/' + id),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: "Bearer " + retrievedToken
@@ -311,7 +306,7 @@ class _ViewLogState extends State<ViewLog> {
     return (response.statusCode);
   }
 
-  deleteLogPrompt(String id, String title) {
+  deleteDialoguePrompt(String id, String title) {
     flush = disguisedPrompt(
       dismissible: false,
       secDur: 0,
@@ -325,7 +320,7 @@ class _ViewLogState extends State<ViewLog> {
       button1Callback: () async {
         shouldPop = false;
         flush.dismiss(true);
-        final statusCode = await deleteLog(id);
+        final statusCode = await deleteDialogue(id);
         await Future.delayed(const Duration(seconds: 1), () {
           shouldPop = true;
         });
@@ -377,7 +372,7 @@ class _ViewLogState extends State<ViewLog> {
                     padding: const EdgeInsets.only(
                         top: 5, left: 5, right: 5, bottom: 3),
                     child: Text(
-                      logBuffer.title,
+                      dialogueBuffer.title,
                       style: cxTextStyle(
                           style: 'normal',
                           size: titleSize,
@@ -391,7 +386,7 @@ class _ViewLogState extends State<ViewLog> {
                     padding:
                         const EdgeInsets.only(left: 5, right: 5, bottom: 3),
                     child: Text(
-                      'by: ' + logBuffer.author,
+                      'by: ' + dialogueBuffer.author,
                       style: cxTextStyle(
                           style: 'normal',
                           size: authorIDSize,
@@ -410,20 +405,20 @@ class _ViewLogState extends State<ViewLog> {
   }
 
   Widget _contentsOfIndex() {
-    List<dynamic> temp = logBuffer.content;
+    List<dynamic> temp = dialogueBuffer.content;
     return ListView.builder(
         shrinkWrap: true,
         itemCount: temp.length,
         physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics()),
-        itemBuilder: (BuildContext context, int contentIndex) {
+        itemBuilder: (BuildContext context, int index) {
           return Padding(
             padding: const EdgeInsets.only(left: 24, bottom: 16, right: 24),
-            child: Text('     ' + temp[contentIndex],
+            child: Text('     ' + temp[index][1],
                 textAlign: TextAlign.left,
                 style: cxTextStyle(
                     style: 'normal',
-                    colour: colour('white'),
+                    colour: colour(temp[index][0]),
                     size: contentSize,
                     fontFamily: contentFont)),
           );

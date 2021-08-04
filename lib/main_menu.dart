@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:another_flushbar/flushbar.dart';
 
 import 'dev.dart';
+import 'modules/dialogues.dart';
 import 'modules/login.dart';
 import 'modules/logs.dart';
 // import 'login.dart';
@@ -192,9 +193,9 @@ class _MainMenuState extends State<MainMenu> {
         //disguisedToast(context: context, message: mainOptions[index]);
         break;
       case 1:
-        // Navigator.push(context,
-        //     MaterialPageRoute(builder: (context) => new DialogueList()));
-        // //disguisedToast(context: context, message: mainOptions[index]);
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const DialogueList()));
+        //disguisedToast(context: context, message: mainOptions[index]);
         break;
       case 2:
 

@@ -3,27 +3,29 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:nexus_omega_app_v2/models/log.dart';
-import '../dev.dart';
+import 'package:nexus_omega_app_v2/models/dialogue.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:another_flushbar/flushbar.dart';
 
-class UpdateLog extends StatefulWidget {
-  final String logTitle, logTags, logID, logAuthor;
-  final List<String> logContents;
-  const UpdateLog({
+import '../dev.dart';
+
+class UpdateDialogue extends StatefulWidget {
+  final String dialogueTitle, dialogueTags, dialogueID, dialogueAuthor;
+  final List<dynamic> dialogueContents;
+  const UpdateDialogue({
     Key? key,
-    required this.logTitle,
-    required this.logTags,
-    required this.logContents,
-    required this.logID,
-    required this.logAuthor,
+    required this.dialogueTitle,
+    required this.dialogueTags,
+    required this.dialogueContents,
+    required this.dialogueID,
+    required this.dialogueAuthor,
+    /*CONTACTS*/
   }) : super(key: key);
   @override
-  _UpdateLogState createState() => _UpdateLogState();
+  _UpdateDialogueState createState() => _UpdateDialogueState();
 }
 
-class _UpdateLogState extends State<UpdateLog> {
+class _UpdateDialogueState extends State<UpdateDialogue> {
   int key = 0, increments = 0, listSize = 1, _count = 1;
   late SharedPreferences tokenStore;
   String stringBuffer = '';
@@ -36,16 +38,32 @@ class _UpdateLogState extends State<UpdateLog> {
     TextEditingController()
   ];
 
-  late Log previousLog, updatedLog;
-  String logIdentifier = '';
+  List<String> colours = <String>[];
+
+  late Dialogue previousDialogue, updatedDialogue;
+  String dialogueIdentifier = '';
   late Flushbar flush;
+  List<PopupItem> menu = [
+    PopupItem(1, 'red'),
+    PopupItem(2, 'orange'),
+    PopupItem(3, 'yellow'),
+    PopupItem(4, 'green'),
+    PopupItem(4, 'blue'),
+    PopupItem(5, 'violet'),
+    PopupItem(6, 'pink'),
+    PopupItem(7, 'grey'),
+    PopupItem(8, 'cyan'),
+    PopupItem(8, 'white'),
+    // PopupItem(
+    //     0, 'nukeTest'), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
+  ];
 
   Future<int> uploadUpdated(
       String title, String tags, List content, String id, String author) async {
     String retrievedToken = '';
     disguisedToast(
         context: context,
-        title: 'Updating Log',
+        title: 'Updating Dialogue',
         titleStyle: cxTextStyle(
           style: 'bold',
           colour: colour('blue'),
@@ -56,7 +74,7 @@ class _UpdateLogState extends State<UpdateLog> {
     //await Future.delayed(Duration(seconds: 3), () {});
     await prefSetup().then((value) => {retrievedToken = value!});
     final response = await http.patch(
-      Uri.parse('https://nexus-omega.herokuapp.com/update/' + id),
+      Uri.parse('https://nexus-omega.herokuapp.com/dialogue/update/' + id),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: "Bearer " + retrievedToken
@@ -71,7 +89,6 @@ class _UpdateLogState extends State<UpdateLog> {
 
     if (response.statusCode == 200) {
       // >>>>>>>>>>>>>>>>>>>>>>>>>>>> RETURN OR UNDO PROMPT <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
       flush = disguisedPrompt(
           dismissible: false,
           secDur: 0,
@@ -91,8 +108,6 @@ class _UpdateLogState extends State<UpdateLog> {
           button2Callback: () async {
             flush.dismiss(true);
             resetCtrlrFields();
-            //saveLog();
-            //s await Future.delayed(Duration(seconds: 2), () {});
           });
     } else {
       disguisedToast(
@@ -108,31 +123,36 @@ class _UpdateLogState extends State<UpdateLog> {
     return tokenStore.getString('token');
   }
 
-  void saveLog() async {
+  void saveDialogue() async {
     bool emptyDetect = false;
-    List<String> listedContent = <String>[];
+    List<List<String>> listedContent = <List<String>>[];
+    List<String> subContent = <String>[];
     for (int i = 0; i < _count; i++) {
-      listedContent.add(contentsCtrlr[i].text);
+      subContent.add(colours[(_count - i - 1)]);
+      subContent.add(contentsCtrlr[i].text);
+      listedContent.add(subContent.toList());
+
+      subContent.clear();
       if (contentsCtrlr[i].text.isEmpty) {
         emptyDetect = true;
       }
     }
     setState(() {
-      // ignore: unnecessary_new
-      updatedLog = new Log(titleCtrlr.text, tagsCtrlr.text,
+      updatedDialogue = Dialogue(titleCtrlr.text, tagsCtrlr.text,
           listedContent.reversed.toList(), authorCtrlr.text);
     });
-    if (updatedLog.title.isEmpty || updatedLog.tags.isEmpty) {
+
+    if (updatedDialogue.title.isEmpty || updatedDialogue.tags.isEmpty) {
       emptyDetect = true;
     }
 
     if (!emptyDetect) {
       await uploadUpdated(
-        updatedLog.title,
-        updatedLog.tags,
+        updatedDialogue.title,
+        updatedDialogue.tags,
         listedContent.reversed.toList(),
-        logIdentifier,
-        updatedLog.author,
+        dialogueIdentifier,
+        updatedDialogue.author,
       );
     } else {
       disguisedToast(
@@ -151,9 +171,9 @@ class _UpdateLogState extends State<UpdateLog> {
     super.initState();
     setState(() {
       _count = 0;
-      previousLog = Log(widget.logTitle, widget.logTags, widget.logContents,
-          widget.logAuthor);
-      logIdentifier = widget.logID;
+      previousDialogue = Dialogue(widget.dialogueTitle, widget.dialogueTags,
+          widget.dialogueContents, widget.dialogueAuthor);
+      dialogueIdentifier = widget.dialogueID;
       resetCtrlrFields();
     });
   }
@@ -167,21 +187,21 @@ class _UpdateLogState extends State<UpdateLog> {
       titleCtrlr.clear();
       tagsCtrlr.clear();
       contentsCtrlr.clear();
+      colours.clear();
       contentsCtrlr = <TextEditingController>[TextEditingController()];
-      titleCtrlr = TextEditingController(text: previousLog.title);
-      tagsCtrlr = TextEditingController(text: previousLog.tags);
-      authorCtrlr = TextEditingController(text: previousLog.author);
-      List<String> contentToDisplay = <String>[];
-      contentToDisplay.clear();
-      final int edge = previousLog.content.length;
+      titleCtrlr = TextEditingController(text: previousDialogue.title);
+      tagsCtrlr = TextEditingController(text: previousDialogue.tags);
+      authorCtrlr = TextEditingController(text: previousDialogue.author);
+      final int edge = previousDialogue.content.length;
       for (int i = 0; i < edge; i++) {
-        contentToDisplay.add(previousLog.content[i]);
         if (i < edge) {
           contentsCtrlr.insert(
-              0, TextEditingController(text: previousLog.content[i]));
+              0, TextEditingController(text: previousDialogue.content[i][1]));
+          colours.add(previousDialogue.content[i][0]);
         }
+
         _count++;
-        listSize = previousLog.content.length;
+        listSize = previousDialogue.content.length;
       }
     });
   }
@@ -202,8 +222,8 @@ class _UpdateLogState extends State<UpdateLog> {
           backgroundColor: colour('black'),
           appBar: AppBar(
             centerTitle: true,
-            title: cText(text: 'Update Log', colour: colour('')),
             flexibleSpace: cxMoveWindow(),
+            title: cText(text: "Update Dialogue", colour: colour('')),
             actions: [
               IconButton(
                 icon: const Icon(Icons.clear),
@@ -223,7 +243,7 @@ class _UpdateLogState extends State<UpdateLog> {
                 children: [
                   ctrlrField(
                       context: context,
-                      fieldPrompt: "First Name",
+                      fieldPrompt: "Title",
                       ctrlrID: titleCtrlr,
                       defaultColor: colour(''),
                       selectedColor: colour('sel'),
@@ -242,7 +262,7 @@ class _UpdateLogState extends State<UpdateLog> {
                   hfill(10),
                   ctrlrField(
                       context: context,
-                      fieldPrompt: "Last Name",
+                      fieldPrompt: "Tags",
                       ctrlrID: tagsCtrlr,
                       defaultColor: colour(''),
                       selectedColor: colour('sel'),
@@ -287,7 +307,7 @@ class _UpdateLogState extends State<UpdateLog> {
               FAB(
                 onPressed: () {
                   // >>>>>>>>>>>>>>>>>>>>>>>>>>>> SAVE BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                  saveLog();
+                  saveDialogue();
                 },
                 icon: const Icon(Icons.save),
                 text: "Save",
@@ -299,17 +319,26 @@ class _UpdateLogState extends State<UpdateLog> {
     );
   }
 
+  colorSelect() {
+    disguisedToast(
+        context: context,
+        title: 'Select Colour',
+        message: 'Touch to Toggle',
+        callback: () => doNoting());
+  }
+
   _incContentFields() {
     setState(() {
       _count++;
       increments++;
       listSize++;
       contentsCtrlr.insert(0, TextEditingController());
-      //nodes.insert(_count, FocusNode());
+      colours.add('white');
     });
   }
 
   _contentInput(int index, context) {
+    Color currentColor = colour(colours[_count - index - 1]);
     return Column(children: <Widget>[
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -317,13 +346,13 @@ class _UpdateLogState extends State<UpdateLog> {
         children: [
           cxIconButton(
             onPressed: () {
-              //FocusManager.instance.primaryFocus?.unfocus();
               if (_count != 1) {
                 setState(() {
                   _count--;
                   increments--;
                   listSize--;
                   contentsCtrlr.removeAt(index);
+                  colours.removeAt(_count - index);
                 });
               }
             },
@@ -335,10 +364,13 @@ class _UpdateLogState extends State<UpdateLog> {
               onPressed: () {
                 setState(() {
                   if (index < contentsCtrlr.length - 2) {
-                    //  WORKING TEXT SWAP
                     stringBuffer = contentsCtrlr[index].text;
                     contentsCtrlr[index].text = contentsCtrlr[index + 1].text;
                     contentsCtrlr[index + 1].text = stringBuffer;
+
+                    stringBuffer = colours[_count - index - 1];
+                    colours[_count - index - 1] = colours[_count - index - 2];
+                    colours[_count - index - 2] = stringBuffer;
                   }
                 });
               },
@@ -360,7 +392,11 @@ class _UpdateLogState extends State<UpdateLog> {
                     stringBuffer = contentsCtrlr[index].text;
                     contentsCtrlr[index].text = contentsCtrlr[index - 1].text;
                     contentsCtrlr[index - 1].text = stringBuffer;
-                  } else {}
+
+                    stringBuffer = colours[_count - index - 1];
+                    colours[_count - index - 1] = colours[_count - index];
+                    colours[_count - index] = stringBuffer;
+                  }
                 });
               },
               height: 35,
@@ -374,12 +410,27 @@ class _UpdateLogState extends State<UpdateLog> {
               iconColour: colour(''),
             ),
           ]),
+          popUpMenu(
+            selectables: menu,
+            onSelection: (value) {
+              setState(() {
+                currentColor = colour(value);
+                colours[_count - index - 1] = value;
+              });
+            },
+            icon: Icon(Icons.color_lens, color: currentColor),
+            backgroundColour: colour('black'),
+            borderColour: currentColor,
+            buttonColour: colour('black'),
+            popupColour: colour('black'),
+            fontSize: 15,
+          ),
           Expanded(
             child: ctrlrField(
               context: context,
               fieldPrompt: "Par #" + (_count - index).toString(),
               ctrlrID: contentsCtrlr[index],
-              defaultColor: colour(''),
+              defaultColor: currentColor,
               selectedColor: colour('sel'),
               next: true,
               autoFocus: false,
@@ -403,35 +454,4 @@ class _UpdateLogState extends State<UpdateLog> {
       hfill(12),
     ]);
   }
-
-  // Widget _removeButton(int index) {
-  //   return InkWell(
-  //     onTap: () {
-  //       //FocusManager.instance.primaryFocus?.unfocus();
-  //       if (_count != 1) {
-  //         setState(() {
-  //           _count--;
-  //           increments--;
-  //           listSize--;
-  //           contentsCtrlr.removeAt(index);
-  //         });
-  //       }
-  //     },
-  //     child: (_count != 1)
-  //         ? Container(
-  //             alignment: Alignment.center,
-  //             width: 24,
-  //             height: 24,
-  //             decoration: BoxDecoration(
-  //               color: Colors.grey,
-  //               borderRadius: BorderRadius.circular(40),
-  //             ),
-  //             child: Icon(
-  //               Icons.cancel,
-  //               color: Colors.white70,
-  //             ),
-  //           )
-  //         : null,
-  //   );
-  // }
 }
