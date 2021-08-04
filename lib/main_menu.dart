@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:another_flushbar/flushbar.dart';
 
 import 'dev.dart';
+import 'modules/login.dart';
 // import 'login.dart';
 
 class MainMenu extends StatefulWidget {
@@ -45,7 +46,7 @@ class _MainMenuState extends State<MainMenu> {
     });
     switch (_selectedChoices) {
       case 'Log-in':
-        // loginTrigger();
+        loginTrigger();
         break;
       case 'Log-out':
         tokenStore.setString('token', '');
@@ -108,7 +109,7 @@ class _MainMenuState extends State<MainMenu> {
               cText(text: " LOG-IN "),
               cxIconButton(
                   onPressed: () {
-                    // loginTrigger();
+                    loginTrigger();
                   },
                   icon: Icon(Icons.login),
                   borderColour: colour('grey'),
@@ -168,9 +169,9 @@ class _MainMenuState extends State<MainMenu> {
   }
 
   loginTrigger() async {
-    // await Navigator.push(
-    //     context, MaterialPageRoute(builder: (context) => LoginScreen()));
-    // await Future.delayed(Duration(seconds: 1), () {});
+    await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => LoginScreen()));
+    await Future.delayed(Duration(seconds: 1), () {});
   }
 
   nextMenu(int index) {
