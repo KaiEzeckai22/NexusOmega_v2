@@ -12,6 +12,8 @@ import 'login.dart';
 import 'view_log.dart';
 
 class LogList extends StatefulWidget {
+  const LogList({Key? key}) : super(key: key);
+
   @override
   _LogListState createState() => _LogListState();
 }
@@ -88,16 +90,18 @@ class _LogListState extends State<LogList> {
         HttpHeaders.authorizationHeader: "Bearer " + retrievedToken
       },
     );
-    if (response.body.toString() == 'Forbidden') {
-      rejectAccess();
-      setState(() {
-        logsList.clear();
-      });
-    } else {
-      setState(() {
-        Iterable list = json.decode(response.body);
-        logsList = list.map((model) => Log.fromJson(model)).toList();
-      });
+    if (mounted) {
+      if (response.body.toString() == 'Forbidden') {
+        rejectAccess();
+        setState(() {
+          logsList.clear();
+        });
+      } else {
+        setState(() {
+          Iterable list = json.decode(response.body);
+          logsList = list.map((model) => Log.fromJson(model)).toList();
+        });
+      }
     }
     return (response.statusCode);
   }
@@ -117,7 +121,7 @@ class _LogListState extends State<LogList> {
         context: context,
         message: 'Deleting Log',
         messageStyle: cxTextStyle(colour: colour('lred')));
-    await Future.delayed(Duration(seconds: 2), () {});
+    await Future.delayed(const Duration(seconds: 2), () {});
     String retrievedToken = '';
     await prefSetup().then((value) => {retrievedToken = value!});
     final response = await http.delete(
@@ -144,7 +148,7 @@ class _LogListState extends State<LogList> {
       button1Callback: () async {
         flush.dismiss(true);
         final statusCode = await deleteLog(id);
-        await Future.delayed(Duration(seconds: 2), () {});
+        await Future.delayed(const Duration(seconds: 2), () {});
         if (statusCode == 200) {
           logsList.clear();
         }
@@ -188,7 +192,7 @@ class _LogListState extends State<LogList> {
             children: <Widget>[
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12),
                   child: ctrlrField(
                       context: context,
                       fieldPrompt: 'Search',
@@ -209,7 +213,7 @@ class _LogListState extends State<LogList> {
                     searchString = '';
                     reloadList();
                   },
-                  icon: Icon(Icons.search_off),
+                  icon: const Icon(Icons.search_off),
                   borderColour: colour('grey'),
                   iconColour: colour('blue')),
               vfill(12),
@@ -219,23 +223,23 @@ class _LogListState extends State<LogList> {
           //TextFormField(decoration: new InputDecoration(labelText: "test")),
           Expanded(
             child: Container(
-                padding: EdgeInsets.only(bottom: 60),
+                padding: const EdgeInsets.only(bottom: 60),
                 height: double.infinity,
                 width: double.infinity,
                 color: Colors.black,
                 child: FutureBuilder<List<Log>>(builder: (context, snapshot) {
-                  return logsList.length != 0
+                  return logsList.isNotEmpty
                       ? RefreshIndicator(
-                          child: new SingleChildScrollView(
-                              padding: EdgeInsets.only(bottom: 100),
+                          child: SingleChildScrollView(
+                              padding: const EdgeInsets.only(bottom: 100),
                               physics: const BouncingScrollPhysics(
                                   parent: AlwaysScrollableScrollPhysics()),
                               child: ListView.builder(
                                   key: UniqueKey(),
-                                  padding:
-                                      EdgeInsetsDirectional.all(10), // MARK
+                                  padding: const EdgeInsetsDirectional.all(
+                                      10), // MARK
                                   itemCount: logsList.length,
-                                  physics: NeverScrollableScrollPhysics(),
+                                  physics: const NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
                                   itemBuilder:
                                       (BuildContext context, int index) {
@@ -256,7 +260,7 @@ class _LogListState extends State<LogList> {
                                                       MaterialPageRoute(
                                                           builder:
                                                               (context) =>
-                                                                  new ViewLog(
+                                                                  ViewLog(
                                                                     logTitle: logsList[
                                                                             index]
                                                                         .title,
@@ -299,13 +303,14 @@ class _LogListState extends State<LogList> {
                                                             colour: colour(
                                                                 'white'))),
                                                     contentPadding:
-                                                        EdgeInsets.only(
+                                                        const EdgeInsets.only(
                                                       top: 6,
                                                       left: 12,
                                                       right: 12,
                                                     ),
                                                     subtitle: Padding(
-                                                      padding: EdgeInsets.only(
+                                                      padding:
+                                                          const EdgeInsets.only(
                                                         top: 3,
                                                         left: 12,
                                                         right: 12,
@@ -352,7 +357,7 @@ class _LogListState extends State<LogList> {
               FocusManager.instance.primaryFocus?.unfocus();
               reloadList();
             },
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             text: "Refresh",
             background: colour('dblue'),
           ),
@@ -365,14 +370,14 @@ class _LogListState extends State<LogList> {
                 final statusCode = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => new CreateNewLog()));
-                await Future.delayed(Duration(seconds: 2), () {});
+                        builder: (context) => const CreateNewLog()));
+                await Future.delayed(const Duration(seconds: 2), () {});
                 statusCodeEval(statusCode);
               } else {
                 rejectAccess();
               }
             },
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             text: "Add New",
             background: colour('dblue'),
           ),
@@ -446,8 +451,8 @@ class _LogListState extends State<LogList> {
 
   loginTrigger() async {
     await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => new LoginScreen()));
-    await Future.delayed(Duration(seconds: 1), () {});
+        context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+    await Future.delayed(const Duration(seconds: 1), () {});
     setState(() {
       reloadList();
     });

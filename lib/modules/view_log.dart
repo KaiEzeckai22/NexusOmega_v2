@@ -1,13 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:nexus_omega_app_v2/models/log.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:another_flushbar/flushbar.dart';
 import '../dev.dart';
+import 'share_methods.dart';
 import 'update_log.dart';
 
 class ViewLog extends StatefulWidget {
@@ -45,41 +44,8 @@ class _ViewLogState extends State<ViewLog> {
   @override
   void initState() {
     super.initState();
-    logBuffer = new Log(
+    logBuffer = Log(
         widget.logTitle, widget.logTags, widget.logContents, widget.logAuthor);
-  }
-
-  void shareLog(BuildContext context, Log any) {
-    //final RenderBox box = context.findRenderObject();
-    String text = 'Title: ' + any.title + '\nAuthor: ' + any.author;
-    int contentsSize = any.content.length;
-    for (int i = 0; i < contentsSize - 1; i++) {
-      text = text + '\n\n\t' + any.content[i];
-    }
-    text = text + '\n\nTags: ' + any.tags;
-    if (Platform.isWindows) {
-      Clipboard.setData(new ClipboardData(text: any.toJson().toString()))
-          .then((_) {
-        disguisedToast(context: context, message: 'Copied to Clipboard');
-      });
-    } else {
-      Share.share(
-        any.toJson().toString(),
-        subject: any.title + '-JSON',
-      );
-    }
-  }
-
-  void exportJSON(BuildContext context, Log any) {
-    //final RenderBox box = context.findRenderObject();
-    String text = any.toJson().toString();
-    if (Platform.isWindows) {
-      Clipboard.setData(new ClipboardData(text: text)).then((_) {
-        disguisedToast(context: context, message: 'Copied to Clipboard');
-      });
-    } else {
-      Share.share(text, subject: any.title);
-    }
   }
 
   List<PopupItem> menu = [
@@ -99,18 +65,13 @@ class _ViewLogState extends State<ViewLog> {
     setState(() {
       _selectedChoices = choice;
     });
-    // print(authorIDSize.toString() +
-    //     ' / ' +
-    //     titleSize.toString() +
-    //     ' / ' +
-    //     contentSize.toString());
     switch (_selectedChoices) {
       case 'Update':
         //defocus();
         await Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => new UpdateLog(
+                builder: (context) => UpdateLog(
                       logTitle: logBuffer.title,
                       logTags: logBuffer.tags,
                       logContents:
@@ -250,7 +211,7 @@ class _ViewLogState extends State<ViewLog> {
         shareLog(context, logBuffer);
         break;
       case 'Export JSON':
-        exportJSON(context, logBuffer);
+        exportLogJSON(context, logBuffer);
         break;
       case 'nukeTest':
         reExtract(widget.logID);
@@ -300,7 +261,7 @@ class _ViewLogState extends State<ViewLog> {
         context: context,
         message: 'Updating Log',
         messageStyle: cxTextStyle(style: 'bold', colour: colour('blue')));
-    await Future.delayed(Duration(seconds: 2), () {});
+    await Future.delayed(const Duration(seconds: 2), () {});
     String retrievedToken = '';
     await prefSetup().then((value) => {retrievedToken = value!});
     final response = await http.get(
@@ -310,24 +271,25 @@ class _ViewLogState extends State<ViewLog> {
         HttpHeaders.authorizationHeader: "Bearer " + retrievedToken
       },
     );
-    if (response.statusCode == 200) {
-      setState(() {
-        logBuffer = new Log.fromJson(json.decode(response.body));
-      });
-      disguisedToast(
-          secDur: 2,
-          context: context,
-          message: 'Update Successful',
-          messageStyle: cxTextStyle(style: 'bold', colour: colour('dgreen')));
-    } else {
-      disguisedToast(
-          secDur: 5,
-          context: context,
-          message:
-              'Something Happened: [' + response.statusCode.toString() + ']',
-          messageStyle: cxTextStyle(style: 'bold', colour: colour('lred')));
+    if (mounted) {
+      if (response.statusCode == 200) {
+        setState(() {
+          logBuffer = Log.fromJson(json.decode(response.body));
+        });
+        disguisedToast(
+            secDur: 2,
+            context: context,
+            message: 'Update Successful',
+            messageStyle: cxTextStyle(style: 'bold', colour: colour('dgreen')));
+      } else {
+        disguisedToast(
+            secDur: 5,
+            context: context,
+            message:
+                'Something Happened: [' + response.statusCode.toString() + ']',
+            messageStyle: cxTextStyle(style: 'bold', colour: colour('lred')));
+      }
     }
-
     return (response.statusCode);
   }
 
@@ -336,7 +298,7 @@ class _ViewLogState extends State<ViewLog> {
         context: context,
         message: 'Deleting Log',
         messageStyle: cxTextStyle(colour: colour('lred')));
-    await Future.delayed(Duration(seconds: 2), () {});
+    await Future.delayed(const Duration(seconds: 2), () {});
     String retrievedToken = '';
     await prefSetup().then((value) => {retrievedToken = value!});
     final response = await http.delete(
@@ -361,9 +323,12 @@ class _ViewLogState extends State<ViewLog> {
       button1Name: 'Yes',
       button1Colour: colour('dgreen'),
       button1Callback: () async {
+        shouldPop = false;
         flush.dismiss(true);
         final statusCode = await deleteLog(id);
-        await Future.delayed(Duration(seconds: 2), () {});
+        await Future.delayed(const Duration(seconds: 1), () {
+          shouldPop = true;
+        });
         Navigator.pop(context, statusCode);
       },
       button2Name: 'No',
@@ -374,65 +339,72 @@ class _ViewLogState extends State<ViewLog> {
     );
   }
 
+  bool shouldPop = true;
   late Flushbar flush;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: colour('black'),
-      appBar: AppBar(
-        backgroundColor: colour('dblue'),
-        title: cText(text: "Logs " /*+ numdeBug.toString()*/),
-        actions: [
-          SelectionMenu(
-            selectables: menu,
-            onSelection: (String value) => setState(() {
-              _select(value);
-            }),
-          )
-        ],
-      ),
-      body: Column(
-        children: <Widget>[
-          Card(
-            margin: EdgeInsets.all(15),
-            color: Colors.black,
-            shape: BeveledRectangleBorder(
-                side: BorderSide(color: colour('blue'), width: 1.5),
-                borderRadius: BorderRadius.circular(10)),
-            child: ListTile(
-              title: Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                  padding:
-                      EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 3),
-                  child: Text(
-                    logBuffer.title,
-                    style: cxTextStyle(
-                        style: 'normal',
-                        size: titleSize,
-                        fontFamily: titleFont),
+    return WillPopScope(
+      onWillPop: () async {
+        return shouldPop;
+      },
+      child: Scaffold(
+        backgroundColor: colour('black'),
+        appBar: AppBar(
+          backgroundColor: colour('dblue'),
+          title: cText(text: "Logs " /*+ numdeBug.toString()*/),
+          actions: [
+            SelectionMenu(
+              selectables: menu,
+              onSelection: (String value) => setState(() {
+                _select(value);
+              }),
+            )
+          ],
+        ),
+        body: Column(
+          children: <Widget>[
+            Card(
+              margin: const EdgeInsets.all(15),
+              color: Colors.black,
+              shape: BeveledRectangleBorder(
+                  side: BorderSide(color: colour('blue'), width: 1.5),
+                  borderRadius: BorderRadius.circular(10)),
+              child: ListTile(
+                title: Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 5, left: 5, right: 5, bottom: 3),
+                    child: Text(
+                      logBuffer.title,
+                      style: cxTextStyle(
+                          style: 'normal',
+                          size: titleSize,
+                          fontFamily: titleFont),
+                    ),
                   ),
                 ),
-              ),
-              subtitle: Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 5, right: 5, bottom: 3),
-                  child: Text(
-                    'by: ' + logBuffer.author,
-                    style: cxTextStyle(
-                        style: 'normal',
-                        size: authorIDSize,
-                        fontFamily: authorFont),
+                subtitle: Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(left: 5, right: 5, bottom: 3),
+                    child: Text(
+                      'by: ' + logBuffer.author,
+                      style: cxTextStyle(
+                          style: 'normal',
+                          size: authorIDSize,
+                          fontFamily: authorFont),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Expanded(child: _contentsOfIndex()),
-        ],
+            Expanded(child: _contentsOfIndex()),
+          ],
+        ),
+        persistentFooterButtons: <Widget>[hfill(25)],
       ),
-      persistentFooterButtons: <Widget>[hfill(25)],
     );
   }
 
@@ -445,7 +417,7 @@ class _ViewLogState extends State<ViewLog> {
             parent: AlwaysScrollableScrollPhysics()),
         itemBuilder: (BuildContext context, int contentIndex) {
           return Padding(
-            padding: EdgeInsets.only(left: 24, bottom: 16, right: 24),
+            padding: const EdgeInsets.only(left: 24, bottom: 16, right: 24),
             child: Text('     ' + temp[contentIndex],
                 textAlign: TextAlign.left,
                 style: cxTextStyle(

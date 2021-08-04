@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'main_menu.dart';
 
 void main() {
-  runApp(NexusOmega());
+  runApp(const NexusOmega());
 }
 
 class NexusOmega extends StatelessWidget {
+  const NexusOmega({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,7 +18,7 @@ class NexusOmega extends StatelessWidget {
         primarySwatch: Colors.grey,
         fontFamily: 'LexendDeca',
       ),
-      home: MainMenu(),
+      home: const MainMenu(),
     );
   }
 }

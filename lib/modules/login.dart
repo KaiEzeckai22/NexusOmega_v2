@@ -7,6 +7,8 @@ import '../dev.dart';
 //import 'package:flutter_string_encryption/flutter_string_encryption.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -29,12 +31,12 @@ class _LoginScreenState extends State<LoginScreen> {
   final usernameCtrlr = TextEditingController();
   final passwordCtrlr = TextEditingController();
 
-  User user = new User("", "");
+  User user = User("", "");
 
   Future<http.Response> uploadUser(String username, String password) async {
     disguisedToast(
         context: context, message: 'Logging in as ' + user.username, secDur: 1);
-    await Future.delayed(Duration(seconds: 2), () {});
+    await Future.delayed(const Duration(seconds: 2), () {});
     String authCode = 'Basic ' +
         base64Encode(utf8.encode(user.username + ':' + user.password));
     final response = await http.post(
@@ -58,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
     int statusCode = 0;
 
     setState(() {
-      user = new User(usernameCtrlr.text, passwordCtrlr.text);
+      user = User(usernameCtrlr.text, passwordCtrlr.text);
     });
     if (user.username.isEmpty || user.password.isEmpty) {
       emptyDetect = true;
@@ -70,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       statusCode = response.statusCode;
       responseToken = json.decode(response.body)['token'];
-      await Future.delayed(Duration(seconds: 2), () {});
+      await Future.delayed(const Duration(seconds: 2), () {});
       if (responseToken == 'rejected') {
         disguisedToast(
             context: context,
@@ -81,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
             message: 'Login Successful',
             messageStyle: cxTextStyle(colour: colour('blue')),
             secDur: 2);
-        await Future.delayed(Duration(seconds: 3), () {});
+        await Future.delayed(const Duration(seconds: 3), () {});
         setState(() {
           Navigator.pop(context);
         });
@@ -129,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
         title: cText(text: "Log-in", colour: colour('')),
         actions: [
           IconButton(
-            icon: Icon(Icons.undo),
+            icon: const Icon(Icons.undo),
             onPressed: () async {
               FocusManager.instance.primaryFocus?.unfocus();
               setState(() {
@@ -177,14 +179,14 @@ class _LoginScreenState extends State<LoginScreen> {
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           FloatingActionButton.extended(
             onPressed: () {
               // >>>>>>>>>>>>>>>>>>>>>>>>>>>> SAVE BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
               saveUser();
             },
-            icon: Icon(Icons.login),
-            label: Text("Log-in"),
+            icon: const Icon(Icons.login),
+            label: const Text("Log-in"),
             foregroundColor: colour(''),
             backgroundColor: colour('dblue'),
           ),

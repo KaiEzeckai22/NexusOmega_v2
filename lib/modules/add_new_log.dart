@@ -10,6 +10,8 @@ import 'package:another_flushbar/flushbar.dart';
 import '../dev.dart';
 
 class CreateNewLog extends StatefulWidget {
+  const CreateNewLog({Key? key}) : super(key: key);
+
   @override
   _CreateNewLogState createState() => _CreateNewLogState();
 }
@@ -143,6 +145,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
       titleCtrlr.clear();
       tagsCtrlr.clear();
       contentsCtrlr.clear();
+      authorCtrlr.clear();
       contentsCtrlr = <TextEditingController>[TextEditingController()];
     });
   }
@@ -164,7 +167,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
         title: cText(text: "New Log Entry", colour: colour('')),
         actions: [
           IconButton(
-            icon: Icon(Icons.undo),
+            icon: const Icon(Icons.undo),
             onPressed: () async {
               FocusManager.instance.primaryFocus?.unfocus();
               resetAllFields();
@@ -212,7 +215,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
               hfill(10),
               Container(
                 alignment: Alignment.centerRight,
-                padding: EdgeInsets.only(bottom: 8, left: 8),
+                padding: const EdgeInsets.only(bottom: 8, left: 8),
                 child: Text("#s: $_count",
                     style: cxTextStyle(
                         style: 'italic', colour: Colors.grey, size: 12)),
@@ -246,7 +249,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
                 //nodes.insert(_count, FocusNode());
               });
             },
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             text: "Add",
             foreground: colour(''),
             background: colour('dblue'),
@@ -257,7 +260,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
               // >>>>>>>>>>>>>>>>>>>>>>>>>>>> SAVE BUTTON <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
               saveLog();
             },
-            icon: Icon(Icons.save),
+            icon: const Icon(Icons.save),
             text: "Save",
             background: colour('dblue'),
           ),
@@ -284,7 +287,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
                 });
               }
             },
-            icon: (_count != 1) ? Icon(Icons.remove) : null,
+            icon: (_count != 1) ? const Icon(Icons.remove) : null,
             iconColour: colour(''),
           ),
           Column(children: <Widget>[
@@ -305,8 +308,8 @@ class _CreateNewLogState extends State<CreateNewLog> {
               icon: ((index == 0) && (index == contentsCtrlr.length - 1))
                   ? null
                   : (index == contentsCtrlr.length - 1)
-                      ? Icon(Icons.not_interested)
-                      : Icon(Icons.arrow_upward),
+                      ? const Icon(Icons.not_interested)
+                      : const Icon(Icons.arrow_upward),
               iconColour: colour(''),
             ),
             cxIconButton(
@@ -326,8 +329,8 @@ class _CreateNewLogState extends State<CreateNewLog> {
               icon: ((index == 0) && (index == contentsCtrlr.length - 1))
                   ? null
                   : (index == 0)
-                      ? Icon(Icons.not_interested)
-                      : Icon(Icons.arrow_downward),
+                      ? const Icon(Icons.not_interested)
+                      : const Icon(Icons.arrow_downward),
               iconColour: colour(''),
             ),
           ]),

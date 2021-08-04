@@ -45,7 +45,7 @@ class _UpdateLogState extends State<UpdateLog> {
         context: context,
         message: 'Deleting Log',
         messageStyle: cxTextStyle(colour: colour('lred')));
-    await Future.delayed(Duration(seconds: 2), () {});
+    await Future.delayed(const Duration(seconds: 2), () {});
     String retrievedToken = '';
     await prefSetup().then((value) => {retrievedToken = value!});
     final response = await http.delete(
@@ -70,9 +70,12 @@ class _UpdateLogState extends State<UpdateLog> {
       button1Name: 'Yes',
       button1Colour: colour('dgreen'),
       button1Callback: () async {
+        shouldPop = false;
         flush.dismiss(true);
         final statusCode = await deleteLog(id);
-        await Future.delayed(Duration(seconds: 2), () {});
+        await Future.delayed(const Duration(seconds: 1), () {
+          shouldPop = true;
+        });
         Navigator.pop(context, statusCode);
       },
       button2Name: 'No',
@@ -111,10 +114,10 @@ class _UpdateLogState extends State<UpdateLog> {
         'author': author,
       }),
     );
- 
+
     if (response.statusCode == 200) {
       // >>>>>>>>>>>>>>>>>>>>>>>>>>>> RETURN OR UNDO PROMPT <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
- 
+
       flush = disguisedPrompt(
           dismissible: false,
           secDur: 0,
@@ -152,7 +155,6 @@ class _UpdateLogState extends State<UpdateLog> {
   }
 
   void saveLog() async {
-    int statusCode = 0;
     bool emptyDetect = false;
     List<String> listedContent = <String>[];
     for (int i = 0; i < _count; i++) {
@@ -162,6 +164,7 @@ class _UpdateLogState extends State<UpdateLog> {
       }
     }
     setState(() {
+      // ignore: unnecessary_new
       updatedLog = new Log(titleCtrlr.text, tagsCtrlr.text,
           listedContent.reversed.toList(), authorCtrlr.text);
     });
@@ -170,7 +173,7 @@ class _UpdateLogState extends State<UpdateLog> {
     }
 
     if (!emptyDetect) {
-      statusCode = await uploadUpdated(
+      await uploadUpdated(
         updatedLog.title,
         updatedLog.tags,
         listedContent.reversed.toList(),
@@ -194,7 +197,7 @@ class _UpdateLogState extends State<UpdateLog> {
     super.initState();
     setState(() {
       _count = 0;
-      previousLog = new Log(widget.logTitle, widget.logTags, widget.logContents,
+      previousLog = Log(widget.logTitle, widget.logTags, widget.logContents,
           widget.logAuthor);
       logIdentifier = widget.logID;
       resetCtrlrFields();
@@ -234,119 +237,125 @@ class _UpdateLogState extends State<UpdateLog> {
     super.dispose();
   }
 
+  bool shouldPop = true;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: colour('black'),
-        appBar: AppBar(
-          centerTitle: true,
-          title: cText(text: "Update Log", colour: colour('')),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.clear),
-              onPressed: () async {
-                FocusManager.instance.primaryFocus?.unfocus();
-                resetCtrlrFields();
-              },
-            )
-          ],
-        ),
-        body: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: Container(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                ctrlrField(
-                    context: context,
-                    fieldPrompt: "First Name",
-                    ctrlrID: titleCtrlr,
-                    defaultColor: colour(''),
-                    selectedColor: colour('sel'),
-                    next: true,
-                    autoFocus: false),
-                hfill(10),
-                ctrlrField(
-                    context: context,
-                    fieldPrompt: "Author",
-                    ctrlrID: authorCtrlr,
-                    defaultColor: colour(''),
-                    selectedColor: colour('sel'),
-                    errorColor: Colors.red,
-                    next: true,
-                    autoFocus: false),
-                hfill(10),
-                ctrlrField(
-                    context: context,
-                    fieldPrompt: "Last Name",
-                    ctrlrID: tagsCtrlr,
-                    defaultColor: colour(''),
-                    selectedColor: colour('sel'),
-                    next: true,
-                    autoFocus: false),
-                hfill(10),
-                Container(
-                  alignment: Alignment.centerRight,
-                  padding: EdgeInsets.only(bottom: 8, left: 8),
-                  child: Text("#s: $_count",
-                      style: cxTextStyle(
-                          style: 'italic', colour: Colors.grey, size: 12)),
-                ),
-                hfill(5),
-                Flexible(
-                  child: ListView.builder(
-                      reverse: true,
-                      shrinkWrap: true,
-                      itemCount: _count,
-                      itemBuilder: (context, index) {
-                        return _contentInput(index, context);
-                      }),
-                ),
-                hfill(45),
-              ],
+    return WillPopScope(
+      onWillPop: () async {
+        return shouldPop;
+      },
+      child: Scaffold(
+          backgroundColor: colour('black'),
+          appBar: AppBar(
+            centerTitle: true,
+            title: cText(text: "Update Log", colour: colour('')),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () async {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  resetCtrlrFields();
+                },
+              )
+            ],
+          ),
+          body: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: Container(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  ctrlrField(
+                      context: context,
+                      fieldPrompt: "First Name",
+                      ctrlrID: titleCtrlr,
+                      defaultColor: colour(''),
+                      selectedColor: colour('sel'),
+                      next: true,
+                      autoFocus: false),
+                  hfill(10),
+                  ctrlrField(
+                      context: context,
+                      fieldPrompt: "Author",
+                      ctrlrID: authorCtrlr,
+                      defaultColor: colour(''),
+                      selectedColor: colour('sel'),
+                      errorColor: Colors.red,
+                      next: true,
+                      autoFocus: false),
+                  hfill(10),
+                  ctrlrField(
+                      context: context,
+                      fieldPrompt: "Last Name",
+                      ctrlrID: tagsCtrlr,
+                      defaultColor: colour(''),
+                      selectedColor: colour('sel'),
+                      next: true,
+                      autoFocus: false),
+                  hfill(10),
+                  Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(bottom: 8, left: 8),
+                    child: Text("#s: $_count",
+                        style: cxTextStyle(
+                            style: 'italic', colour: Colors.grey, size: 12)),
+                  ),
+                  hfill(5),
+                  Flexible(
+                    child: ListView.builder(
+                        reverse: true,
+                        shrinkWrap: true,
+                        itemCount: _count,
+                        itemBuilder: (context, index) {
+                          return _contentInput(index, context);
+                        }),
+                  ),
+                  hfill(45),
+                ],
+              ),
             ),
           ),
-        ),
-        floatingActionButton: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            FAB(
-                onPressed: () async {
-                  // >>>>>>>>>>>>>>>>>>>>>>>>>>>> DELETE BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                  deleteLogPrompt(logIdentifier, titleCtrlr.text);
+          floatingActionButton: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              FAB(
+                  onPressed: () async {
+                    // >>>>>>>>>>>>>>>>>>>>>>>>>>>> DELETE BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                    deleteLogPrompt(logIdentifier, titleCtrlr.text);
+                  },
+                  icon: const Icon(Icons.delete_forever),
+                  text: "Delete",
+                  background: colour('dred')),
+              vfill(48),
+              FAB(
+                onPressed: () {
+                  // >>>>>>>>>>>>>>>>>>>>>>>>>>>> ADD BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                  setState(() {
+                    _count++;
+                    increments++;
+                    listSize++;
+                    contentsCtrlr.insert(0, TextEditingController());
+                  });
                 },
-                icon: Icon(Icons.delete_forever),
-                text: "Delete",
-                background: colour('dred')),
-            vfill(48),
-            FAB(
-              onPressed: () {
-                // >>>>>>>>>>>>>>>>>>>>>>>>>>>> ADD BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                setState(() {
-                  _count++;
-                  increments++;
-                  listSize++;
-                  contentsCtrlr.insert(0, TextEditingController());
-                });
-              },
-              icon: Icon(Icons.add),
-              text: "Add",
-              background: colour('dblue'),
-            ),
-            vfill(12),
-            FAB(
-              onPressed: () {
-                // >>>>>>>>>>>>>>>>>>>>>>>>>>>> SAVE BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                saveLog();
-              },
-              icon: Icon(Icons.save),
-              text: "Save",
-              background: colour('dblue'),
-            ),
-          ],
-        ),
-        persistentFooterButtons: <Widget>[]);
+                icon: const Icon(Icons.add),
+                text: "Add",
+                background: colour('dblue'),
+              ),
+              vfill(12),
+              FAB(
+                onPressed: () {
+                  // >>>>>>>>>>>>>>>>>>>>>>>>>>>> SAVE BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                  saveLog();
+                },
+                icon: const Icon(Icons.save),
+                text: "Save",
+                background: colour('dblue'),
+              ),
+            ],
+          ),
+          persistentFooterButtons: const <Widget>[]),
+    );
   }
 
   _contentInput(int index, context) {
@@ -367,7 +376,7 @@ class _UpdateLogState extends State<UpdateLog> {
                 });
               }
             },
-            icon: (_count != 1) ? Icon(Icons.remove) : null,
+            icon: (_count != 1) ? const Icon(Icons.remove) : null,
             iconColour: colour(''),
           ),
           Column(children: <Widget>[
@@ -388,8 +397,8 @@ class _UpdateLogState extends State<UpdateLog> {
               icon: ((index == 0) && (index == contentsCtrlr.length - 2))
                   ? null
                   : (index == contentsCtrlr.length - 2)
-                      ? Icon(Icons.not_interested)
-                      : Icon(Icons.arrow_upward),
+                      ? const Icon(Icons.not_interested)
+                      : const Icon(Icons.arrow_upward),
               iconColour: colour(''),
             ),
             cxIconButton(
@@ -409,8 +418,8 @@ class _UpdateLogState extends State<UpdateLog> {
               icon: ((index == 0) && (index == contentsCtrlr.length - 2))
                   ? null
                   : (index == 0)
-                      ? Icon(Icons.not_interested)
-                      : Icon(Icons.arrow_downward),
+                      ? const Icon(Icons.not_interested)
+                      : const Icon(Icons.arrow_downward),
               iconColour: colour(''),
             ),
           ]),

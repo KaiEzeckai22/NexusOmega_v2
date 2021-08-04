@@ -1,10 +1,7 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:dbcrypt/dbcrypt.dart';
 //import 'package:flushbar/flushbar.dart';
 import 'package:another_flushbar/flushbar.dart';
@@ -32,33 +29,31 @@ void share(BuildContext context, Object any) {
 Color colour(String? colour) {
   switch (colour) {
     case ('pink'):
-      return Color(0xffff3c9d);
+      return const Color(0xffff3c9d);
     case ('lred'):
       return Colors.red;
     case ('red'):
-      return Color(0xffcc1c10);
+      return const Color(0xffcc1c10);
     case ('dred'):
-      return Color(0xff500000);
+      return const Color(0xff500000);
     case ('orange'):
       return Colors.orange;
     case ('yellow'):
       return Colors.yellow;
     case ('green'):
-      return Color(0xff00f006);
+      return const Color(0xff00f006);
     case ('dgreen'):
-      return Color(0xff008000);
+      return const Color(0xff008000);
     case ('lblue'):
       return Colors.lightBlue;
     case ('blue'):
       return Colors.blue;
     case ('violet'):
-      return Color(0xff8866ff);
+      return const Color(0xff8866ff);
     case ('cyan'):
-      return Color(0xff07cdf8);
+      return const Color(0xff07cdf8);
     case ('dblue'):
-      return Color(0xff01579b);
-    case ('lred'):
-      return Colors.red;
+      return const Color(0xff01579b);
     case ('black'):
       return Colors.black;
     case ('grey'):
@@ -66,14 +61,14 @@ Color colour(String? colour) {
     case ('white'):
       return Colors.white;
     case ('def'):
-      return Color(0xffffffff);
+      return const Color(0xffffffff);
     case ('sel'):
-      return Color(0xff00abff);
+      return const Color(0xff00abff);
     case ('sub'):
-      return Color(0xff6f6f6f);
+      return const Color(0xff6f6f6f);
     // CUSTOM PALLETTE
     case ('xblue'):
-      return Color(0xff00a8db);
+      return const Color(0xff00a8db);
     default:
       return Colors.white;
   }
@@ -118,7 +113,7 @@ Widget ctrlrField({
         ? TextInputAction.next
         : TextInputAction.done,
     textCapitalization: TextCapitalization.sentences,
-    decoration: new InputDecoration(
+    decoration: InputDecoration(
       border: InputBorder.none,
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(
@@ -131,7 +126,7 @@ Widget ctrlrField({
         ),
       ),
       disabledBorder: InputBorder.none,
-      contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
       labelText: fieldPrompt,
       labelStyle: cxTextStyle(style: 'normal', colour: selectedColor, size: 15),
       errorBorder: OutlineInputBorder(
@@ -255,7 +250,8 @@ List<PopupItem> selectables = [
 ];*/
 
 class SelectionMenu extends StatelessWidget {
-  SelectionMenu({required this.selectables, required this.onSelection});
+  // ignore: use_key_in_widget_constructors
+  const SelectionMenu({required this.selectables, required this.onSelection});
   final Function(String) onSelection;
   final List<PopupItem> selectables;
   @override
@@ -264,7 +260,7 @@ class SelectionMenu extends StatelessWidget {
         color: Colors.black,
         elevation: 20,
         enabled: true,
-        icon: Icon(Icons.settings),
+        icon: const Icon(Icons.settings),
         enableFeedback: true,
         onSelected: (value) {
           //defocus();
@@ -351,7 +347,8 @@ class FAB extends StatelessWidget {
   final TextStyle? style;
   final Color? foreground, background;
 
-  FAB(
+  // ignore: use_key_in_widget_constructors
+  const FAB(
       {required this.onPressed,
       this.icon,
       this.text,
@@ -432,7 +429,7 @@ SizedBox cxIconButton({
             defocus();
             onPressed();
           },
-          icon: (icon != null) ? icon : Icon(null),
+          icon: (icon != null) ? icon : const Icon(null),
           color: (iconColour != null) ? iconColour : Colors.black45,
           iconSize: (iconSize != null) ? iconSize : 24,
         ),
@@ -463,9 +460,9 @@ Flushbar disguisedToast(
     bool? closeAfter}) {
   late Flushbar flushbar;
   return flushbar = Flushbar(
-    margin: EdgeInsets.all(10),
-    padding: EdgeInsets.all(15),
-    borderRadius: BorderRadius.all(Radius.circular(12)),
+    margin: const EdgeInsets.all(10),
+    padding: const EdgeInsets.all(15),
+    borderRadius: const BorderRadius.all(Radius.circular(12)),
     backgroundColor: (bgcolour != null) ? bgcolour : Colors.black87,
     mainButton: (callback != null)
         ? TextButton(
@@ -487,7 +484,7 @@ Flushbar disguisedToast(
           )
         : null,
     duration: (secDur == null)
-        ? Duration(seconds: 3)
+        ? const Duration(seconds: 3)
         : (secDur == 0)
             ? null
             : Duration(seconds: secDur),
@@ -538,9 +535,9 @@ Flushbar disguisedPrompt(
   late Flushbar flushbar;
 
   return flushbar = Flushbar(
-    margin: EdgeInsets.all(10),
-    padding: EdgeInsets.all(15),
-    borderRadius: BorderRadius.all(Radius.circular(12)),
+    margin: const EdgeInsets.all(10),
+    padding: const EdgeInsets.all(15),
+    borderRadius: const BorderRadius.all(Radius.circular(12)),
     backgroundColor: (bgcolour != null) ? bgcolour : Colors.black87,
     mainButton: Row(
       children: [
@@ -582,7 +579,7 @@ Flushbar disguisedPrompt(
       ],
     ),
     duration: (secDur == null)
-        ? Duration(seconds: 3)
+        ? const Duration(seconds: 3)
         : (secDur == 0)
             ? null
             : Duration(seconds: secDur),
@@ -637,9 +634,9 @@ Flushbar tripleDisguises(
   late Flushbar flushbar;
 
   return flushbar = Flushbar(
-    margin: EdgeInsets.all(10),
-    padding: EdgeInsets.all(15),
-    borderRadius: BorderRadius.all(Radius.circular(12)),
+    margin: const EdgeInsets.all(10),
+    padding: const EdgeInsets.all(15),
+    borderRadius: const BorderRadius.all(Radius.circular(12)),
     backgroundColor: (bgcolour != null) ? bgcolour : Colors.black87,
     mainButton: Row(
       children: [
@@ -699,7 +696,7 @@ Flushbar tripleDisguises(
       ],
     ),
     duration: (secDur == null)
-        ? Duration(seconds: 3)
+        ? const Duration(seconds: 3)
         : (secDur == 0)
             ? null
             : Duration(seconds: secDur),
@@ -736,10 +733,8 @@ double rng(double min, double max) {
 }*/
 
 int rng(int? min, int max) {
-  final rng = new Random();
-  if (min == null) {
-    min = 0;
-  }
+  final rng = Random();
+  min ??= 0;
   final int rex = max - min;
   return min + rng.nextInt(rex);
 }

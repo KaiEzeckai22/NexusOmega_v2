@@ -10,6 +10,8 @@ import 'modules/logs.dart';
 // import 'login.dart';
 
 class MainMenu extends StatefulWidget {
+  const MainMenu({Key? key}) : super(key: key);
+
   @override
   _MainMenuState createState() => _MainMenuState();
 }
@@ -112,7 +114,7 @@ class _MainMenuState extends State<MainMenu> {
                   onPressed: () {
                     loginTrigger();
                   },
-                  icon: Icon(Icons.login),
+                  icon: const Icon(Icons.login),
                   borderColour: colour('grey'),
                   iconColour: colour('blue')),
               vfill(3),
@@ -120,21 +122,21 @@ class _MainMenuState extends State<MainMenu> {
           ),
           Expanded(
             child: Container(
-                padding: EdgeInsets.only(bottom: 60),
+                padding: const EdgeInsets.only(bottom: 60),
                 height: double.infinity,
                 width: double.infinity,
                 color: Colors.black,
                 child:
                     FutureBuilder<List<String>>(builder: (context, snapshot) {
-                  return new SingleChildScrollView(
-                      padding: EdgeInsets.only(bottom: 100),
+                  return SingleChildScrollView(
+                      padding: const EdgeInsets.only(bottom: 100),
                       physics: const BouncingScrollPhysics(
                           parent: AlwaysScrollableScrollPhysics()),
                       child: ListView.builder(
                           key: UniqueKey(),
-                          padding: EdgeInsetsDirectional.all(10), // MARK
+                          padding: const EdgeInsetsDirectional.all(10), // MARK
                           itemCount: mainOptions.length,
-                          physics: NeverScrollableScrollPhysics(),
+                          physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           itemBuilder: (BuildContext context, int index) {
                             return GestureDetector(
@@ -152,7 +154,7 @@ class _MainMenuState extends State<MainMenu> {
                                   children: <Widget>[
                                     ListTile(
                                       title: Text(mainOptions[index],
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold,
                                           )),
@@ -171,8 +173,8 @@ class _MainMenuState extends State<MainMenu> {
 
   loginTrigger() async {
     await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => LoginScreen()));
-    await Future.delayed(Duration(seconds: 1), () {});
+        context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+    await Future.delayed(const Duration(seconds: 1), () {});
   }
 
   nextMenu(int index) {
@@ -185,7 +187,7 @@ class _MainMenuState extends State<MainMenu> {
     switch (index) {
       case 0:
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => new LogList()));
+            context, MaterialPageRoute(builder: (context) => const LogList()));
         //disguisedToast(context: context, message: mainOptions[index]);
         break;
       case 1:
