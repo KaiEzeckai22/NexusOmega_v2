@@ -89,6 +89,7 @@ class _MainMenuState extends State<MainMenu> {
       backgroundColor: colour('black'),
       appBar: AppBar(
         backgroundColor: colour('dblue'),
+        flexibleSpace: cxMoveWindow(),
         title: cText(text: "Main Menu "),
         actions: [
           SelectionMenu(

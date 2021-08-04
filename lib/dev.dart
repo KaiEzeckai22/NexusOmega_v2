@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 //import 'package:flushbar/flushbar.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 //import 'package:another_flushbar/flushbar_helper.dart';
 //import 'package:another_flushbar/flushbar_route.dart';
 //import 'package:crypto/crypto.dart';
@@ -746,6 +747,10 @@ int rng(int? min, int max) {
   min ??= 0;
   final int rex = max - min;
   return min + rng.nextInt(rex);
+}
+
+Widget cxMoveWindow() {
+  return MoveWindow();
 }
 
 /* bool checkPassword(String plainPassword) {

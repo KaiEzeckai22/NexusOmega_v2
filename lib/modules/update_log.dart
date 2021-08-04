@@ -248,7 +248,8 @@ class _UpdateLogState extends State<UpdateLog> {
           backgroundColor: colour('black'),
           appBar: AppBar(
             centerTitle: true,
-            title: cText(text: "Update Log", colour: colour('')),
+            title: cText(text: 'Update Log', colour: colour('')),
+            flexibleSpace: cxMoveWindow(),
             actions: [
               IconButton(
                 icon: const Icon(Icons.clear),

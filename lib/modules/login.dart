@@ -128,7 +128,8 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: colour('black'),
       appBar: AppBar(
         centerTitle: true,
-        title: cText(text: "Log-in", colour: colour('')),
+        title: cText(text: 'Log-in', colour: colour('')),
+        flexibleSpace: cxMoveWindow(),
         actions: [
           IconButton(
             icon: const Icon(Icons.undo),

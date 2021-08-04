@@ -172,7 +172,8 @@ class _LogListState extends State<LogList> {
       backgroundColor: colour('black'),
       appBar: AppBar(
         backgroundColor: colour('dblue'),
-        title: cText(text: "Logs " /*+ numdeBug.toString()*/),
+        flexibleSpace: cxMoveWindow(),
+        title: cText(text: 'Logs' /*+ numdeBug.toString()*/),
         actions: [
           SelectionMenu(
             selectables: menu,

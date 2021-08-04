@@ -350,8 +350,9 @@ class _ViewLogState extends State<ViewLog> {
       child: Scaffold(
         backgroundColor: colour('black'),
         appBar: AppBar(
-          backgroundColor: colour('dblue'),
-          title: cText(text: "Logs " /*+ numdeBug.toString()*/),
+          backgroundColor: colour('black'),
+          flexibleSpace: cxMoveWindow(),
+          title: cText(text: '' /*+ numdeBug.toString()*/),
           actions: [
             SelectionMenu(
               selectables: menu,
