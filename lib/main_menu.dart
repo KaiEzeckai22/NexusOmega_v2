@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 // import 'package:nexus_omega_app/modules/dialogues.dart';
 // import 'package:nexus_omega_app/modules/logs.dart';
@@ -38,7 +40,7 @@ class _MainMenuState extends State<MainMenu> {
   List<PopupItem> menu = [
     PopupItem(1, "Log-in"),
     PopupItem(2, "Log-out"),
-    //PopupItem(3, "DevTest-sp"),
+    PopupItem(3, "Exit"),
     //PopupItem(4, "DevTest-sb"),
     //PopupItem(5, "DevTest-newGet"),
     //PopupItem(0, "nukeTest"), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
@@ -58,6 +60,10 @@ class _MainMenuState extends State<MainMenu> {
             context: context,
             message: 'Logged out',
             messageStyle: cxTextStyle(style: 'bold', colour: colour('red')));
+        break;
+      case 'Exit':
+        disguisedToast(
+            context: context, message: 'Closing App', onDismiss: () => exit(0));
         break;
       case 'nukeTest':
         // NUKE AREA
