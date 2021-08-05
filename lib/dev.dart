@@ -17,9 +17,20 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 //import 'dart:async';
 
 double contentSize = 20, titleSize = 37, authorIDSize = 13;
+int titleFontIndex = 0, authorFontIndex = 0, contentFontIndex = 0;
+int counter = 0;
 
 doNoting() {}
 none() {}
+
+resetParameters() {
+  contentSize = 20;
+  titleSize = 37;
+  authorIDSize = 13;
+  titleFontIndex = 0;
+  authorFontIndex = 0;
+  contentFontIndex = 0;
+}
 
 String backSpaceString(String str) {
   String result = '';
@@ -36,53 +47,110 @@ void share(BuildContext context, Object any) {
   Share.share(any.toString());
 }
 
-Color colour(String? colour) {
-  switch (colour) {
-    case ('pink'):
-      return const Color(0xffff3c9d);
-    case ('lred'):
-      return Colors.red;
-    case ('red'):
-      return const Color(0xffcc1c10);
-    case ('dred'):
-      return const Color(0xff500000);
-    case ('orange'):
-      return Colors.orange;
-    case ('yellow'):
-      return Colors.yellow;
-    case ('green'):
-      return const Color(0xff00f006);
-    case ('dgreen'):
-      return const Color(0xff008000);
-    case ('lblue'):
-      return Colors.lightBlue;
-    case ('blue'):
-      return Colors.blue;
-    case ('violet'):
-      return const Color(0xff8866ff);
-    case ('cyan'):
-      return const Color(0xff07cdf8);
-    case ('dblue'):
-      return const Color(0xff01579b);
-    case ('black'):
-      return Colors.black;
-    case ('grey'):
-      return Colors.grey;
-    case ('white'):
-      return Colors.white;
-    case ('def'):
-      return const Color(0xffffffff);
-    case ('sel'):
-      return const Color(0xff00abff);
-    case ('sub'):
-      return const Color(0xff6f6f6f);
-    // CUSTOM PALLETTE
-    case ('xblue'):
-      return const Color(0xff00a8db);
-    default:
-      return Colors.white;
-  }
+List<PopupItem> colourMenu = [
+  PopupItem(1, 'red'),
+  PopupItem(2, 'orange'),
+  PopupItem(3, 'yellow'),
+  PopupItem(4, 'green'),
+  PopupItem(4, 'blue'),
+  PopupItem(5, 'violet'),
+  PopupItem(6, 'pink'),
+  PopupItem(7, 'silver'),
+  PopupItem(8, 'cyan'),
+  PopupItem(9, 'grey'),
+  PopupItem(10, 'white'),
+  PopupItem(10, 'gold'),
+  PopupItem(10, 'teal'),
+  PopupItem(10, 'white'),
+  PopupItem(10, 'gold'),
+  PopupItem(10, 'teal'),
+  PopupItem(10, 'white'),
+  PopupItem(10, 'gold'),
+  PopupItem(10, 'teal'),
+  // PopupItem(
+  //     0, 'nukeTest'), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
+];
+
+class CxColour {
+  final String name;
+  final Color colour;
+  CxColour(this.name, this.colour);
 }
+
+List<CxColour> colourList = [
+  CxColour('pink', const Color(0xffff3c9d)),
+  CxColour('lred', Colors.red),
+  CxColour('red', const Color(0xffcc1c10)),
+  CxColour('dred', const Color(0xff500000)),
+  CxColour('orange', Colors.orange),
+  CxColour('yellow', Colors.yellow),
+  CxColour('green', const Color(0xff00f006)),
+  CxColour('dgreen', const Color(0xff008000)),
+  CxColour('lblue', Colors.lightBlue),
+  CxColour('blue', Colors.blue),
+  CxColour('violet', const Color(0xff8866ff)),
+  CxColour('cyan', const Color(0xff07cdf8)),
+  CxColour('dblue', const Color(0xff01579b)),
+  CxColour('black', Colors.black),
+  CxColour('grey', const Color(0xff909090)),
+  CxColour('silver', const Color(0xffc0c0c0)),
+  CxColour('white', Colors.white),
+];
+
+Color colour(String? colour) {
+  for (int i = 0; i < colourList.length; i++) {
+    if (colour == colourList[i].name) {
+      return colourList[i].colour;
+    }
+  }
+  return Colors.white;
+}
+// switch (colour) {
+//   case ('pink'):
+//     return const ;
+//   case ('lred'):
+//     return Colors.red;
+//   case ('red'):
+//     return const Color(0xffcc1c10);
+//   case ('dred'):
+//     return const Color(0xff500000);
+//   case ('orange'):
+//     return Colors.orange;
+//   case ('yellow'):
+//     return Colors.yellow;
+//   case ('green'):
+//     return const Color(0xff00f006);
+//   case ('dgreen'):
+//     return const Color(0xff008000);
+//   case ('lblue'):
+//     return Colors.lightBlue;
+//   case ('blue'):
+//     return Colors.blue;
+//   case ('violet'):
+//     return const Color(0xff8866ff);
+//   case ('cyan'):
+//     return const Color(0xff07cdf8);
+//   case ('dblue'):
+//     return const Color(0xff01579b);
+//   case ('black'):
+//     return Colors.black;
+//   case ('grey'):
+//     return const Color(0xff909090);
+//   case ('silver'):
+//     return const Color(0xffc0c0c0);
+//   case ('white'):
+//     return Colors.white;
+//   case ('def'):
+//     return const Color(0xffffffff);
+//   case ('sel'):
+//     return const Color(0xff00abff);
+//   case ('sub'):
+//     return const Color(0xff6f6f6f);
+//   // CUSTOM PALLETTE
+//   case ('xblue'):
+//     return const Color(0xff00a8db);
+//   default:
+//     return Colors.white;
 
 Widget ctrlrField({
   required BuildContext context,

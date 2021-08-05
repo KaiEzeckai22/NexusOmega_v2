@@ -34,20 +34,6 @@ class _CreateNewDialogueState extends State<CreateNewDialogue> {
   late Dialogue previousDialogue, newDialogue;
   String dialogueIdentifier = '';
   late Flushbar flush;
-  List<PopupItem> menu = [
-    PopupItem(1, 'red'),
-    PopupItem(2, 'orange'),
-    PopupItem(3, 'yellow'),
-    PopupItem(4, 'green'),
-    PopupItem(4, 'blue'),
-    PopupItem(5, 'violet'),
-    PopupItem(6, 'pink'),
-    PopupItem(7, 'grey'),
-    PopupItem(8, 'cyan'),
-    PopupItem(8, 'white'),
-    // PopupItem(
-    //     0, 'nukeTest'), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
-  ];
 
   Future<int> deleteDialogue(String id) async {
     disguisedToast(
@@ -433,7 +419,7 @@ class _CreateNewDialogueState extends State<CreateNewDialogue> {
             ),
           ]),
           popUpMenu(
-            selectables: menu,
+            selectables: colourMenu,
             onSelection: (value) {
               setState(() {
                 currentColor = colour(value);

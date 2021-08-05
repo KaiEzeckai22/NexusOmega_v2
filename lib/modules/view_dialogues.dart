@@ -27,16 +27,13 @@ class ViewDialogue extends StatefulWidget {
 class _ViewDialogueState extends State<ViewDialogue> {
   late SharedPreferences tokenStore;
   String debug = "";
-  int numdeBug = 0,
-      titleFontIndex = 0,
-      authorFontIndex = 0,
-      contentFontIndex = 0;
+  int numdeBug = 0;
   TextEditingController searchCtrlr = TextEditingController();
   bool promptLocked = false;
   String searchString = "";
-  String titleFont = importedFonts[0];
-  String authorFont = importedFonts[0];
-  String contentFont = importedFonts[0];
+  String titleFont = importedFonts[titleFontIndex];
+  String authorFont = importedFonts[authorFontIndex];
+  String contentFont = importedFonts[contentFontIndex];
 
   late String displayTitle, displayTag;
   late List<String> displayContent;
