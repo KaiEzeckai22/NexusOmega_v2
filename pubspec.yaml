@@ -160,7 +160,7 @@ flutter:
   - family: Tippa
     fonts:
       - asset: fonts/Tippa.ttf
-  - family: Tippa
+  - family: Video
     fonts:
       - asset: fonts/Video.ttf                                            
   # To add assets to your application, add an assets section, like this:

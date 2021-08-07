@@ -418,7 +418,7 @@ class _CreateNewDialogueState extends State<CreateNewDialogue> {
               iconColour: colour(''),
             ),
           ]),
-          popUpMenu(
+          colourPopUpMenu(
             selectables: colourMenu,
             onSelection: (value) {
               setState(() {

@@ -43,7 +43,6 @@ class _UpdateDialogueState extends State<UpdateDialogue> {
   late Dialogue previousDialogue, updatedDialogue;
   String dialogueIdentifier = '';
   late Flushbar flush;
-  
 
   Future<int> uploadUpdated(
       String title, String tags, List content, String id, String author) async {
@@ -397,7 +396,7 @@ class _UpdateDialogueState extends State<UpdateDialogue> {
               iconColour: colour(''),
             ),
           ]),
-          popUpMenu(
+          colourPopUpMenu(
             selectables: colourMenu,
             onSelection: (value) {
               setState(() {

@@ -29,6 +29,7 @@ class _MainMenuState extends State<MainMenu> {
     // 'Projects',
     // 'Casual Tragedy',
     // 'More',
+    'nukeTest',
   ];
   String debug = "";
   int numdeBug = 0;
@@ -43,7 +44,8 @@ class _MainMenuState extends State<MainMenu> {
     PopupItem(3, "Exit"),
     //PopupItem(4, "DevTest-sb"),
     //PopupItem(5, "DevTest-newGet"),
-    //PopupItem(0, "nukeTest"), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
+    PopupItem(
+        0, "nukeTest"), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
   ];
   String _selectedChoices = "none";
   void _select(String choice) {
@@ -66,23 +68,7 @@ class _MainMenuState extends State<MainMenu> {
             context: context, message: 'Closing App', onDismiss: () => exit(0));
         break;
       case 'nukeTest':
-        // NUKE AREA
-        // disguisedPrompt(
-        //     context: context,
-        //     title: 'Confirm Delete',
-        //     titleStyle: cxTextStyle(style: 'bold'),
-        //     message: '   Would you like\n   to proceed?',
-        //     messageStyle: cxTextStyle(style: 'italic', size: 16),
-        //     button1Name: 'Yes',
-        //     button1Colour: colour('dgreen'),
-        //     button1Callback: () => setState(() {
-        //           numdeBug++;
-        //         }),
-        //     button2Name: 'No',
-        //     button2Colour: colour('red'),
-        //     button2Callback: () => setState(() {
-        //           numdeBug--;
-        //         }));
+        cxColourList.namesToString();
         break;
       default:
         _selectedChoices = 'none';

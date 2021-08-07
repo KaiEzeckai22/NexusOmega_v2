@@ -47,35 +47,58 @@ void share(BuildContext context, Object any) {
   Share.share(any.toString());
 }
 
-List<PopupItem> colourMenu = [
-  PopupItem(1, 'red'),
-  PopupItem(2, 'orange'),
-  PopupItem(3, 'yellow'),
-  PopupItem(4, 'green'),
-  PopupItem(4, 'blue'),
-  PopupItem(5, 'violet'),
-  PopupItem(6, 'pink'),
-  PopupItem(7, 'silver'),
-  PopupItem(8, 'cyan'),
-  PopupItem(9, 'grey'),
-  PopupItem(10, 'white'),
-  PopupItem(10, 'gold'),
-  PopupItem(10, 'teal'),
-  PopupItem(10, 'white'),
-  PopupItem(10, 'gold'),
-  PopupItem(10, 'teal'),
-  PopupItem(10, 'white'),
-  PopupItem(10, 'gold'),
-  PopupItem(10, 'teal'),
-  // PopupItem(
-  //     0, 'nukeTest'), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
-];
+List<PopupItem> colourMenu = cxColourList.toPopUpList();
+//   PopupItem(1, 'red'),
+//   PopupItem(2, 'orange'),
+//   PopupItem(3, 'yellow'),
+//   PopupItem(4, 'green'),
+//   PopupItem(4, 'blue'),
+//   PopupItem(5, 'violet'),
+//   PopupItem(6, 'pink'),
+//   PopupItem(7, 'silver'),
+//   PopupItem(8, 'cyan'),
+//   PopupItem(9, 'grey'),
+//   PopupItem(10, 'white'),
+//   PopupItem(10, 'gold'),
+//   PopupItem(10, 'teal'),
+//   PopupItem(10, 'white'),
+//   PopupItem(10, 'gold'),
+//   PopupItem(10, 'teal'),
+//   PopupItem(10, 'white'),
+//   PopupItem(10, 'gold'),
+//   PopupItem(10, 'teal'),
+//   // PopupItem(
+//   //     0, 'nukeTest'), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
+// ];
 
 class CxColour {
   final String name;
   final Color colour;
   CxColour(this.name, this.colour);
 }
+
+class CxColourList {
+  final List<CxColour> colours;
+  CxColourList(this.colours);
+
+  List<String> namesToString() {
+    List<String> names = [];
+    for (int i = 0; i < colours.length; i++) {
+      names.add((colours[i].name).toString());
+    }
+    return names;
+  }
+
+  List<PopupItem> toPopUpList() {
+    List<PopupItem> colourPopUp = [];
+    for (int i = 0; i < colours.length; i++) {
+      colourPopUp.add(PopupItem(i, (colours[i].name).toString()));
+    }
+    return colourPopUp;
+  }
+}
+
+CxColourList cxColourList = CxColourList(colourList);
 
 List<CxColour> colourList = [
   CxColour('pink', const Color(0xffff3c9d)),
@@ -105,52 +128,6 @@ Color colour(String? colour) {
   }
   return Colors.white;
 }
-// switch (colour) {
-//   case ('pink'):
-//     return const ;
-//   case ('lred'):
-//     return Colors.red;
-//   case ('red'):
-//     return const Color(0xffcc1c10);
-//   case ('dred'):
-//     return const Color(0xff500000);
-//   case ('orange'):
-//     return Colors.orange;
-//   case ('yellow'):
-//     return Colors.yellow;
-//   case ('green'):
-//     return const Color(0xff00f006);
-//   case ('dgreen'):
-//     return const Color(0xff008000);
-//   case ('lblue'):
-//     return Colors.lightBlue;
-//   case ('blue'):
-//     return Colors.blue;
-//   case ('violet'):
-//     return const Color(0xff8866ff);
-//   case ('cyan'):
-//     return const Color(0xff07cdf8);
-//   case ('dblue'):
-//     return const Color(0xff01579b);
-//   case ('black'):
-//     return Colors.black;
-//   case ('grey'):
-//     return const Color(0xff909090);
-//   case ('silver'):
-//     return const Color(0xffc0c0c0);
-//   case ('white'):
-//     return Colors.white;
-//   case ('def'):
-//     return const Color(0xffffffff);
-//   case ('sel'):
-//     return const Color(0xff00abff);
-//   case ('sub'):
-//     return const Color(0xff6f6f6f);
-//   // CUSTOM PALLETTE
-//   case ('xblue'):
-//     return const Color(0xff00a8db);
-//   default:
-//     return Colors.white;
 
 Widget ctrlrField({
   required BuildContext context,
@@ -260,7 +237,7 @@ List<String> importedFonts = [
   'SpecialElite',
   'Stalemate',
   'Tippa',
-  'Tippa',
+  'Video'
 ];
 
 TextStyle cxTextStyle(
@@ -407,13 +384,130 @@ SizedBox popUpMenu({
               itemBuilder: (context) {
                 return selectables.map((PopupItem choice) {
                   return PopupMenuItem(
-                    value: choice.name,
-                    child: Text(
-                      choice.name.toUpperCase(),
-                      style: cxTextStyle(
-                          style: 'bold', colour: colour(choice.name), size: 20),
+                      value: choice.name,
+                      child: Stack(
+                        children: <Widget>[
+                          Text(
+                            choice.name.toUpperCase(),
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                foreground: Paint()
+                                  ..style = PaintingStyle.stroke
+                                  ..strokeWidth = 2
+                                  ..color = Colors.white),
+                          ),
+                          Text(
+                            choice.name.toUpperCase(),
+                            style: cxTextStyle(
+                                style: 'normal',
+                                colour: colour(choice.name),
+                                size: 20),
+                          ),
+                        ],
+                      ));
+                }).toList();
+              })));
+}
+
+SizedBox colourPopUpMenu({
+  required Function(String) onSelection,
+  required List<PopupItem> selectables,
+  String? text,
+  TextStyle? textStyle,
+  Color? buttonColour,
+  Icon? icon,
+  Color? iconColour,
+  backgroundColour,
+  borderColour,
+  popupColour,
+  double? height,
+  width,
+  fontSize,
+}) {
+  return SizedBox(
+      height: (height != null) ? height : 50,
+      width: (width != null) ? width : 50,
+      child: Card(
+          color: (backgroundColour != null) ? backgroundColour : Colors.black45,
+          semanticContainer: true,
+          shape: ContinuousRectangleBorder(
+              side: BorderSide(
+                  color: (borderColour != null) ? borderColour : Colors.white,
+                  width: 1.5),
+              borderRadius: BorderRadius.circular(10)),
+          child: PopupMenuButton(
+              shape: ContinuousRectangleBorder(
+                  side: const BorderSide(color: Colors.white, width: 1.5),
+                  borderRadius: BorderRadius.circular(10)),
+              color: (popupColour != null) ? popupColour : Colors.black45,
+              enabled: true,
+              icon: (icon != null)
+                  ? icon
+                  : Icon(
+                      Icons.settings,
+                      color: (iconColour != null) ? iconColour : colour(''),
                     ),
-                  );
+              enableFeedback: true,
+              onSelected: (value) {
+                //defocus();
+                onSelection(value.toString());
+              },
+              itemBuilder: (context) {
+                return selectables.map((PopupItem choice) {
+                  return PopupMenuItem(
+                      value: choice.name,
+                      child: Card(
+                          color: (backgroundColour != null)
+                              ? backgroundColour
+                              : Colors.black45,
+                          shape: ContinuousRectangleBorder(
+                              side: const BorderSide(
+                                  color: Colors.white, width: 1.5),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                SizedBox(
+                                  height: 45,
+                                  width: 45,
+                                  child: Card(
+                                    color: (backgroundColour != null)
+                                        ? colour(choice.name)
+                                        : Colors.black45,
+                                    shape: ContinuousRectangleBorder(
+                                        side: const BorderSide(
+                                            color: Colors.white, width: 1.5),
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                  ),
+                                ),
+                                Expanded(
+                                    child: Text(choice.name.toUpperCase(),
+                                        style: cxTextStyle())),
+                              ]))
+                      /* Stack(
+                        children: <Widget>[
+                          Text(
+                            choice.name.toUpperCase(),
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                foreground: Paint()
+                                  ..style = PaintingStyle.stroke
+                                  ..strokeWidth = 2
+                                  ..color = Colors.white),
+                          ),
+                          Text(
+                            choice.name.toUpperCase(),
+                            style: cxTextStyle(
+                                style: 'normal',
+                                colour: colour(choice.name),
+                                size: 20),
+                          ),
+                        ],
+                      )*/
+                      );
                 }).toList();
               })));
 }
